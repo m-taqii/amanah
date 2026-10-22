@@ -1,0 +1,67 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "5af90625-ab7d-4c21-9808-b081a65c9ec0",
+  "prevIds": [
+    "44929f61-0194-4ca8-a7c8-aa0dea6f4139"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "user_type"
+      ],
+      "writes": [
+        "s|enum|public.user_type",
+        "n|enum|public.user_type",
+        "e|enum|public.user_type",
+        "n|type|public.user_type"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "users",
+        "profilePicture"
+      ],
+      "writes": [
+        "s|colprop|public.users.profilePicture.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.users.profilePicture"
+      ],
+      "sqlHash": "35be5fd565ac7539"
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "user_type",
+        "values": [
+          "donor",
+          "volunteer"
+        ],
+        "entityType": "enums"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"users\",\"profilePicture\"]",
+      "set": {
+        "notNull": false
+      }
+    }
+  ]
+}
