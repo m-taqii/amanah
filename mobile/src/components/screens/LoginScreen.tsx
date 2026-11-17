@@ -17,7 +17,11 @@ import { AmanahColors, Radius } from '@/constants/theme';
 import { login as loginApi } from '@/lib/api';
 import { useApp } from '@/context/AppContext';
 
-export function LoginScreen() {
+interface LoginScreenProps {
+  onNavigateToRegister?: () => void;
+}
+
+export function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
   const [selectedRole, setSelectedRole] = useState<'donor' | 'volunteer'>('donor');
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -229,30 +233,10 @@ export function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Social / Alternative Divider */}
-          <View style={styles.dividerRow}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or continue with</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          {/* Alternative Auth Buttons */}
-          <View style={styles.socialButtonsRow}>
-            <TouchableOpacity activeOpacity={0.8} style={styles.socialButton}>
-              <Ionicons name="logo-google" size={18} color={AmanahColors.text} />
-              <Text style={styles.socialButtonText}>Google</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity activeOpacity={0.8} style={styles.socialButton}>
-              <Ionicons name="call-outline" size={18} color={AmanahColors.primary} />
-              <Text style={styles.socialButtonText}>Phone OTP</Text>
-            </TouchableOpacity>
-          </View>
-
           {/* Sign Up Footer Link */}
           <View style={styles.signupFooter}>
             <Text style={styles.signupPrompt}>Don&apos;t have an Amanah account? </Text>
-            <TouchableOpacity activeOpacity={0.7}>
+            <TouchableOpacity activeOpacity={0.7} onPress={onNavigateToRegister}>
               <Text style={styles.signupLink}>Register here</Text>
             </TouchableOpacity>
           </View>
@@ -454,49 +438,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#FFFFFF',
   },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 14,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: AmanahColors.cardBorder,
-  },
-  dividerText: {
-    fontSize: 11.5,
-    color: AmanahColors.textMuted,
-    paddingHorizontal: 10,
-    fontWeight: '500',
-  },
-  socialButtonsRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 22,
-  },
-  socialButton: {
-    flex: 1,
-    backgroundColor: AmanahColors.card,
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    borderColor: AmanahColors.cardBorder,
-    paddingVertical: 11,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  socialButtonText: {
-    fontSize: 12.5,
-    fontWeight: '600',
-    color: AmanahColors.text,
-  },
   signupFooter: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginVertical: 18,
   },
   signupPrompt: {
     fontSize: 12.5,

@@ -15,9 +15,13 @@ import { ImpactScreen } from '@/components/screens/ImpactScreen';
 import { ProfileScreen } from '@/components/screens/ProfileScreen';
 import { DonationsListScreen } from '@/components/screens/DonationsListScreen';
 import { LoginScreen } from '@/components/screens/LoginScreen';
+import { RegisterScreen } from '@/components/screens/RegisterScreen';
 
 export default function AppMainScreen() {
   const { role, activeTab, setActiveTab, rescues, userToken, isLoading } = useApp();
+
+  // Auth screen toggle (login vs register)
+  const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
 
   // Sub-navigation state within tabs
   const [donorSubScreen, setDonorSubScreen] = useState<'share' | 'activeRescue' | null>(null);
@@ -34,9 +38,11 @@ export default function AppMainScreen() {
         <Text>Loading...</Text>
       </View>
     );
-  }
-  else if (!userToken) {
-    return <LoginScreen />;
+  } else if (!userToken) {
+    if (authScreen === 'register') {
+      return <RegisterScreen onNavigateToLogin={() => setAuthScreen('login')} />;
+    }
+    return <LoginScreen onNavigateToRegister={() => setAuthScreen('register')} />;
   }
 
   if (role === 'donor') {
