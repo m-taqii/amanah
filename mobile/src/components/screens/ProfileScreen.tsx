@@ -12,7 +12,7 @@ import { AmanahColors, Radius } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 
 export function ProfileScreen() {
-  const { role, setRole } = useApp();
+  const { role, setRole, logout, currentUser } = useApp();
 
   return (
     <ScrollView
@@ -22,15 +22,19 @@ export function ProfileScreen() {
       {/* Profile Card */}
       <View style={styles.profileCard}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarInitials}>{role === 'donor' ? 'AK' : 'HM'}</Text>
+          <Text style={styles.avatarInitials}>
+            {currentUser?.name
+              ? currentUser.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()
+              : (role === 'donor' ? 'AS' : 'HM')}
+          </Text>
         </View>
         <Text style={styles.profileName}>
-          {role === 'donor' ? 'Ayesha Khan' : 'Hamza Malik'}
+          {currentUser?.name || (role === 'donor' ? 'Ayesha Siddiqa' : 'Hamza Malik')}
         </Text>
         <Text style={styles.profileAffiliation}>
-          {role === 'donor'
+          {currentUser?.email || currentUser?.phone || (role === 'donor'
             ? 'Barkat Catering & Banquet Services'
-            : 'Verified Courier · Gulberg Chapter'}
+            : 'Verified Courier · Gulberg Chapter')}
         </Text>
 
         <View style={styles.verifiedBadge}>
@@ -123,6 +127,23 @@ export function ProfileScreen() {
           <Ionicons name="help-circle-outline" size={18} color={AmanahColors.text} />
           <Text style={styles.menuLabel}>Help & Courier Support</Text>
           <Feather name="chevron-right" size={16} color={AmanahColors.textMuted} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => {
+            Alert.alert(
+              'Sign Out',
+              'Are you sure you want to sign out?',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Sign Out', style: 'destructive', onPress: () => logout() },
+              ]
+            );
+          }}>
+          <Ionicons name="log-out-outline" size={18} color="#DC2626" />
+          <Text style={[styles.menuLabel, { color: '#DC2626' }]}>Sign Out</Text>
+          <Feather name="chevron-right" size={16} color="#DC2626" />
         </TouchableOpacity>
       </View>
 

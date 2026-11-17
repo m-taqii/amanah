@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AmanahColors } from '@/constants/theme';
 import { useApp, RescueItem } from '@/context/AppContext';
@@ -14,9 +14,10 @@ import { ActiveRescueScreen } from '@/components/screens/ActiveRescueScreen';
 import { ImpactScreen } from '@/components/screens/ImpactScreen';
 import { ProfileScreen } from '@/components/screens/ProfileScreen';
 import { DonationsListScreen } from '@/components/screens/DonationsListScreen';
+import { LoginScreen } from '@/components/screens/LoginScreen';
 
 export default function AppMainScreen() {
-  const { role, activeTab, setActiveTab, rescues } = useApp();
+  const { role, activeTab, setActiveTab, rescues, userToken, isLoading } = useApp();
 
   // Sub-navigation state within tabs
   const [donorSubScreen, setDonorSubScreen] = useState<'share' | 'activeRescue' | null>(null);
@@ -26,6 +27,17 @@ export default function AppMainScreen() {
   // Determine back navigation configuration
   let backTitle: string | undefined;
   let onBack: (() => void) | undefined;
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+  else if (!userToken) {
+    return <LoginScreen />;
+  }
 
   if (role === 'donor') {
     if (donorSubScreen === 'share') {

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import * as SecureStore from 'expo-secure-store';
 export type UserRole = 'donor' | 'volunteer';
 export type RescueStage = 'claimed' | 'collected' | 'delivered';
 
@@ -41,6 +41,11 @@ interface AppContextType {
   confirmCollected: () => void;
   confirmDelivered: () => void;
   addDonation: (donation: Partial<RescueItem>) => void;
+  userToken: string | null;
+  currentUser: any | null;
+  isLoading: boolean;
+  login: (token: string, newRole?: UserRole, userData?: any) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const defaultRescues: RescueItem[] = [
@@ -120,16 +125,83 @@ const defaultRescues: RescueItem[] = [
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<UserRole>('donor');
+  const [role, setRoleState] = useState<UserRole>('donor');
   const [activeTab, setActiveTab] = useState<string>('home');
   const [rescues, setRescues] = useState<RescueItem[]>(defaultRescues);
   const [activeRescueId, setActiveRescueId] = useState<string>('AM-0128');
   const [activeRescueStage, setActiveRescueStage] = useState<RescueStage>('claimed');
+  const [userToken, setUserToken] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    async function loadStoredAuth() {
+      try {
+        const [token, savedRole, savedUserData] = await Promise.all([
+          SecureStore.getItemAsync('userToken'),
+          SecureStore.getItemAsync('userRole'),
+          SecureStore.getItemAsync('userData'),
+        ]);
+
+        if (token) {
+          setUserToken(token);
+        }
+        if (savedRole === 'donor' || savedRole === 'volunteer') {
+          setRoleState(savedRole);
+          setActiveTab(savedRole === 'donor' ? 'home' : 'nearby');
+        }
+        if (savedUserData) {
+          try {
+            setCurrentUser(JSON.parse(savedUserData));
+          } catch {
+            // Ignore parse errors
+          }
+        }
+      } catch (error) {
+        console.error('Error loading stored auth session:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadStoredAuth();
+  }, []);
+
+  const handleSetRole = (newRole: UserRole) => {
+    setRoleState(newRole);
+    setActiveTab(newRole === 'donor' ? 'home' : 'nearby');
+    SecureStore.setItemAsync('userRole', newRole).catch(() => {});
+  };
+
+  const login = async (token: string, newRole?: UserRole, userData?: any) => {
+    setUserToken(token);
+    await SecureStore.setItemAsync('userToken', token);
+
+    if (newRole) {
+      setRoleState(newRole);
+      setActiveTab(newRole === 'donor' ? 'home' : 'nearby');
+      await SecureStore.setItemAsync('userRole', newRole);
+    }
+    if (userData) {
+      setCurrentUser(userData);
+      await SecureStore.setItemAsync('userData', JSON.stringify(userData));
+    }
+  };
+
+  const logout = async () => {
+    setUserToken(null);
+    setCurrentUser(null);
+    await Promise.all([
+      SecureStore.deleteItemAsync('userToken'),
+      SecureStore.deleteItemAsync('userRole'),
+      SecureStore.deleteItemAsync('userData'),
+    ]);
+  };
 
   const toggleRole = () => {
-    setRole((prev) => {
+    setRoleState((prev) => {
       const nextRole = prev === 'donor' ? 'volunteer' : 'donor';
       setActiveTab(nextRole === 'donor' ? 'home' : 'nearby');
+      SecureStore.setItemAsync('userRole', nextRole).catch(() => {});
       return nextRole;
     });
   };
@@ -189,7 +261,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider
       value={{
         role,
-        setRole,
+        setRole: handleSetRole,
         toggleRole,
         activeTab,
         setActiveTab,
@@ -200,6 +272,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         confirmCollected,
         confirmDelivered,
         addDonation,
+        userToken,
+        currentUser,
+        isLoading,
+        login,
+        logout,
       }}>
       {children}
     </AppContext.Provider>
