@@ -1,0 +1,2 @@
+CREATE TYPE "donation_status" AS ENUM('available', 'claimed', 'expired');--> statement-breakpoint
+ALTER TABLE "donations" ALTER COLUMN "status" SET DATA TYPE "donation_status" USING "status"::"donation_status";

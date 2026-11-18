@@ -1,0 +1,71 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "32c2131a-9159-4607-b773-a9631496e7c1",
+  "prevIds": [
+    "47d476c7-ea96-4abe-957f-f5fb93a0aea6"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "donation_status"
+      ],
+      "writes": [
+        "s|enum|public.donation_status",
+        "n|enum|public.donation_status",
+        "e|enum|public.donation_status",
+        "n|type|public.donation_status"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "donations",
+        "status"
+      ],
+      "writes": [
+        "s|colprop|public.donations.status.type",
+        "s|colprop|public.donations.status.default"
+      ],
+      "reads": [
+        "n|tbl|public.donations",
+        "n|sch|public",
+        "n|col|public.donations.status",
+        "n|enum|public.donation_status"
+      ],
+      "sqlHash": "4aac300bbd728b1f"
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "donation_status",
+        "values": [
+          "available",
+          "claimed",
+          "expired"
+        ],
+        "entityType": "enums"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"donations\",\"status\"]",
+      "set": {
+        "type": "donation_status",
+        "typeSchema": "public"
+      }
+    }
+  ]
+}

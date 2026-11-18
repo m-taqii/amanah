@@ -49,7 +49,7 @@ amanah/                             ← monorepo root
 │       ├── app.js                  ← Express app, middleware, route registration
 │       ├── controllers/
 │       │   ├── user.controller.js  ← register, login, getMe
-│       │   └── donations.controller.js ← createDonation, uploadImage, getDonations, getDonation
+│       │   └── donations.controller.js ← createDonation, uploadImage, getDonations, getDonation, getUserDonations
 │       ├── db/
 │       │   ├── index.js            ← Drizzle client (node-postgres)
 │       │   └── schema/
